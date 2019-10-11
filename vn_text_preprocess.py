@@ -3,16 +3,17 @@ import os
 import collections
 import codecs
 import pandas as pd
-from vncorenlp import VnCoreNLP
+# from vncorenlp import VnCoreNLP
 
-annotator = VnCoreNLP(address="http://127.0.0.1", port=9000)
-#annotator = VnCoreNLP("<path to vncorenlp-1.1.1.jar>", 
+# annotator = VnCoreNLP(address="http://127.0.0.1", port=9000)
+# annotator = VnCoreNLP("<path to vncorenlp-1.1.1.jar>", 
 #                     annotators="wseg,pos,ner,parse", max_heap_size='-Xmx2g')
 
 # directory = 'C:\\Users\\Tenkyuu\\Desktop\\VNTC\\Data\\27Topics\\Ver1.1\\new train'
 
 # given directory from root rootdir, extract sentences from .txt files
 # return a list of sentences
+# REQUIRES VnCoreNLP TO USE!!!
 def get_text(rootdir):
     corpus = []
     # search for files within directory
@@ -41,7 +42,6 @@ def clean_corpus(corpus):
         # remove words that start with upper letter
         corpus[i] = [x for x in corpus[i] if not x[0].isupper()]
     return corpus
-
 
 # return Counter dict with words as keys
 # and occurrences as values
@@ -73,11 +73,11 @@ def generate_data(corpus, window_size = 1):
     
     return data
 
-def get_data(directory, vocab_size, window_size):
-    # extract sentences from text files in directory
-    corpus = get_text(directory)
+# preprocess corpus
+def get_data(corpus, vocab_size, window_size):
+    # corpus = get_text(directory)
     # remove strings with punctuations from corpus
-    corpus = remove_punctuations(corpus)
+    corpus = clean_corpus(corpus)
     # get list of words with their occurrences
     words = get_vocab(corpus)
     # get the (vocab_size) most common words
