@@ -1,4 +1,5 @@
 import tensorflow as tf
+import io
 from tensorflow import keras
 from tensorflow.keras import layers
 import numpy as np
@@ -11,27 +12,45 @@ vocab_size = 1000
 window_size = 1
 corpus_path = 'pickles\\corpus.pkl'
 
-# load corpus
-corpus = []
-with open(corpus_path, 'rb') as file:
-	corpus = dill.load(file)
+def main():
+	embedding_dim = input('Enter embedding_dim: ')
+	vocab_size = input('Enter vocab size: ')
+	window_size = input('Enter window size for skip gram: ')
+	corpus_path = input('Enter corpus path (.pkl): ')
+	# load corpus
+    corpus = []
+    with open(corpus_path, 'rb') as file:
+    	corpus = dill.load(file)
+    
+    # preprocessing
+    vocab, word2int, data = preprocess.get_data(corpus, vocab_size, window_size)
+    dataset = tf.data.Dataset.from_tensor_slices((tf.one_hot(data[:,0], vocab_size),
+    	                                          tf.one_hot(data[:,1], vocab_size)))
+    dataset_batch = dataset.shuffle(1000).batch(128)
+    
+    model = keras.Sequential([
+    	layers.Embedding(vocab_size, embedding_dim),
+    	layers.GlobalAveragePooling1D(),
+    	layers.Dense(1000, activation='sigmoid')
+    ])
+    
+    #model.summary()
+    
+    model.compile(optimizer='adam',
+    	          loss='categorical_crossentropy',
+    	          metrics={'CategoricalAccuracy'})
+    
+    history = model.fit(dataset_batch, epochs = num_epochs)
 
-# preprocessing
-data = preprocess.get_data(corpus, vocab_size, window_size)
-dataset = tf.data.Dataset.from_tensor_slices((tf.one_hot(data[:,0], 1000),
-	                                          tf.one_hot(data[:,1])))
-dataset_batch = dataset.shuffle(1000).batch(128)
+    # embedding weights
+    weights = model.layers[0].get_weights()[0]
+    out_v = io.open('embedding_visualization\\vecs.tsv', 'w', encoding='utf-8')
+    out_m = io.open('embedding_visualization\\meta.tsv', 'w', encoding='utf16')
 
-model = keras.Sequential([
-	layers.Embedding(vocab_size, embedding_dim),
-	layers.GlobalAveragePooling1D(),
-	layers.Dense(1000, activation='sigmoid')
-])
+    for idx, word in enumerate(word2int):
+    	vec = weights[idx]
+    	out_m.write(word + "\n")
+    	out_v.write('\t'.join([str(x) for x in vec]) + '\n')
 
-#model.summary()
-
-model.compile(optimizer='adam',
-	          loss='categorical_crossentropy',
-	          metrics={'CategoricalAccuracy'})
-
-history = model.fit(dataset_batch, epochs = num_epochs)
+    out_m.close()
+    out_v.close()

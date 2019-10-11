@@ -91,7 +91,8 @@ def get_data(corpus, vocab_size, window_size):
     # turn data to pandas dataframe
     df = pd.DataFrame(data, columns = ['input', 'label'])
     # change words to their ids
-    id_data = np.array([[word2int[i] for i in df[row]] for row in list(df)])
+    id_data = np.array([[word2int[row['input']], word2int[row['label']]] 
+                       for index, row in df.iterrows()])
     # TODO: rewrite function with less operations
-    return id_data
+    return vocab, word2int, id_data
 
