@@ -5,18 +5,22 @@ from tensorflow.keras import layers
 import numpy as np
 import vn_text_preprocess as preprocess
 import dill
+import argparse
 
-embedding_dim = 100
-vocab_size = 1000
+parse = argparse.ArgumentParser()
+parser.add_argument("--embedding_dim", default = 100)
+parser.add_argument("--vocab_size", default = 1000)
 # window size for skip gram
-window_size = 1
-corpus_path = 'pickles\\corpus.pkl'
+parser.add_argument("--window_size", default = 1)
+parser.add_argument("--corpus_path", default = 'pickles\\corpus.pkl')
+
+args = parser.parse_args()
 
 def main():
-	embedding_dim = input('Enter embedding_dim: ')
-	vocab_size = input('Enter vocab size: ')
-	window_size = input('Enter window size for skip gram: ')
-	corpus_path = input('Enter corpus path (.pkl): ')
+	embedding_dim = agrs.embedding_dim
+	vocab_size = args.vocab_size
+	window_size = args.window_size
+	corpus_path = args.corpus_path
 	# load corpus
     corpus = []
     with open(corpus_path, 'rb') as file:
@@ -42,6 +46,9 @@ def main():
     
     history = model.fit(dataset_batch, epochs = num_epochs)
 
+    # save embedding weights
+    model.save_weights('checkpoints\\my_checkpoint')
+
     # embedding weights
     weights = model.layers[0].get_weights()[0]
     out_v = io.open('embedding_visualization\\vecs.tsv', 'w', encoding='utf-8')
@@ -54,3 +61,6 @@ def main():
 
     out_m.close()
     out_v.close()
+
+if __name__ == '__main__':
+	main()
