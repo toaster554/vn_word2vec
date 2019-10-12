@@ -3,6 +3,7 @@ import os
 import collections
 import codecs
 import pandas as pd
+import numpy as np
 # from vncorenlp import VnCoreNLP
 
 # annotator = VnCoreNLP(address="http://127.0.0.1", port=9000)
