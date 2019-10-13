@@ -12,6 +12,8 @@ parser.add_argument("--embedding_dim", default = 100)
 parser.add_argument("--vocab_size", default = 1000)
 # window size for skip gram
 parser.add_argument("--window_size", default = 1)
+parser.add_argument("--training_size", default = 10000)
+parser.add_argument("--epochs", default = 10)
 parser.add_argument("--corpus_path", default = 'pickles\\corpus.pkl')
 
 args = parser.parse_args()
@@ -20,6 +22,8 @@ def main():
     embedding_dim = int(args.embedding_dim)
     vocab_size = int(args.vocab_size)
     window_size = int(args.window_size)
+    training_size = int(args.training_size)
+    num_epochs = int(args.epochs)
     corpus_path = args.corpus_path
     # load corpus
     print('Loading corpus...')
@@ -28,10 +32,11 @@ def main():
     
     # preprocessing
     print('Preprocessing corpus...')
-    vocab, word2int, data = preprocess.get_data(corpus, vocab_size, window_size)
+    vocab, word2int, data = preprocess.get_data(corpus, vocab_size, window_size, 
+                                                training_size)
     dataset = tf.data.Dataset.from_tensor_slices((tf.one_hot(data[:,0], vocab_size),
                                                   tf.one_hot(data[:,1], vocab_size)))
-    dataset_batch = dataset.shuffle(1000).batch(128)
+    dataset_batch = dataset.shuffle(1000).batch(64)
     
     model = keras.Sequential([
         layers.Embedding(vocab_size, embedding_dim),
@@ -41,11 +46,11 @@ def main():
     
     #model.summary()
     print('Fitting model...')
-    model.compile(optimizer='adam',
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.001, amsgrad=True),
                   loss='categorical_crossentropy',
-                  metrics={'CategoricalAccuracy'})
+                  metrics=['CategoricalAccuracy'])
     
-    history = model.fit(dataset_batch, epochs = num_epochs)
+    history = model.fit(dataset, epochs = num_epochs)
 
     # save embedding weights
     model.save_weights('checkpoints\\my_checkpoint')

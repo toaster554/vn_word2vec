@@ -75,9 +75,10 @@ def generate_data(corpus, window_size = 1):
     return data
 
 # preprocess corpus
-def get_data(corpus, vocab_size, window_size):
+def get_data(corpus, vocab_size, window_size, training_size):
     # corpus = get_text(directory)
     # remove strings with punctuations from corpus
+    corpus = corpus[:training_size]
     corpus = clean_corpus(corpus)
     # get list of words with their occurrences
     words = get_vocab(corpus)
