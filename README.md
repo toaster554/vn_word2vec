@@ -9,7 +9,7 @@ python word2vec.py [--embedding_dim] [--vocab_size] [--window_size] [--training_
 - **embedding_dim:** The dimensionality of your word embedding (Default: 100)  
 - **vocab_size:** The size of the vocab (most common words) from your corpus (Default: 1000)  
 - **window_size:** The window size that your skip gram model uses (Default: 1)  
-- **training_size:** The number of sentences from corpus used for training (Default: 10000 with equals to around 700 mb of memory)  
+- **training_size:** The number of sentences from corpus used for training (Default: 10000 which equals to around 700 mb of memory)  
 - **epochs:** The number of epochs for training
 - **corpus_path:** The path to your corpus (.pkl format) (Default: 'pickles\\corpus')
 ## **What does it do?**  
