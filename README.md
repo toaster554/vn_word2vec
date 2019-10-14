@@ -5,7 +5,7 @@ Word2vec for Vietnamese using skip gram model
 ```
 python word2vec.py [--embedding_dim] [--vocab_size] [--window_size] [--training_size] [--epochs] [--corpus_path]
 ```
-**Legends:**  
+**Argument Descriptions:**  
 - **embedding_dim:** The dimensionality of your word embedding (Default: 100)  
 - **vocab_size:** The size of the vocab (most common words) from your corpus (Default: 1000)  
 - **window_size:** The window size that your skip gram model uses (Default: 1)  
